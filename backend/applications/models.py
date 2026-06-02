@@ -92,3 +92,16 @@ class Notification(db.Model):
     message_body = db.Column(db.Text, nullable = False)
     is_read = db.Column(db.Boolean, default = False)
     created_at = db.Column(db.DateTime, default = datetime.utcnow)
+
+
+#Payment Model 
+
+class Payment(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"), nullable = False)
+    amount = db.Column(db.Float, nullable = False)
+    payment_method = db.Column(db.String(), nullable = False)
+    payment_status = db.Column(db.String(), default = "Pending") #Pending, Successful, Waiting Confirmation
+    payment_date = db.Column(db.Date, default = datetime.utcnow)
+    booking = db.relationship("Booking", backref = "payment")
+
