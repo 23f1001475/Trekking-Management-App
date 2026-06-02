@@ -66,7 +66,7 @@ class Booking(db.MOdel):
 # Trek Staff Assignment Model: to mananage staff. many staff can be assigned to one trek. One staff can manage many trek (many to many (staff <-> trek))
 
 class TrekStaffAssignment(db.Model):
-    __tablename__ = "tef_staff_assignment"
+    __tablename__ = "trek_staff_assignment"
     id = db.Column(db.Integer, primary_key = True)
     trek_id = db.Column(db.integer, db.ForeignKey("trek.id"), nullable = False)
     trek_staff_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
@@ -83,4 +83,12 @@ class ActivityLog(db.MOdel):
     created_at = db.Column(db.DateTime, default = datetime.utcnow)
 
 
+#Notification Model : for Celery tasks. for Trek approved, Booking confirmed, Trek cancelled.
 
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
+    message_title = db.Column(db.String(), nullable = False)
+    message_body = db.Column(db.Text, nullable = False)
+    is_read = db.Column(db.Boolean, default = False)
+    created_at = db.Column(db.DateTime, default = datetime.utcnow)
