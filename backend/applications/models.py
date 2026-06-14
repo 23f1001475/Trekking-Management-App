@@ -1,5 +1,5 @@
 from .database import db
-from flask_security import UserMixin, RoleMixin   #these are class woth have predefined methods(functions) which are necessary to retreive the authentication token
+
 from datetime import datetime
 
 
@@ -12,7 +12,7 @@ class User(db.Model):
     role = db.Column(db.String(), nullable = False, default = "trekker")
     phone = db.Column(db.Integer(), nullable = False, unique = True)
     is_active = db.Column(db.Boolean, nullable = False, default = True)
-    created_at = db.Column(db.DataTime, default = datetime.utcnow)
+    created_at = db.Column(db.DateTime, default = datetime.utcnow)
     is_blaclisted = db.Column(db.Boolean, default = False)
     is_deleted = db.Column(db.Boolean, default = False)
     deleted_at = db.Column(db.DateTime) 
@@ -23,6 +23,7 @@ class User(db.Model):
 #Trek Route Model : To manage trekking routes.
 
 class TrekRoute(db.Model):
+    __tablename__ = "trek_route"
     id  = db.Column(db.Integer, primary_key = True)
     route_name = db.Column(db.String(), nullable = False)
     location = db.Column(db.String(), nullable = False)
@@ -30,7 +31,7 @@ class TrekRoute(db.Model):
     days_on_trail = db.Column(db.Integer, nullable = False)
     altitude = db.Column(db.Integer, nullable = False)
     description = db.Column(db.Text, nullable = False)
-    created_at = db.Column(db.DataTime, default = datetime.utcnow)
+    created_at = db.Column(db.DateTime, default = datetime.utcnow)
     treks = db.relationship("Trek", backref = "route", lazy = True)
 
 
@@ -48,7 +49,7 @@ class Trek(db.Model):
     approval_status = db.Column(db.string(), default = "Approved") #Approved or Rejected or Waiting
     created_at = db.Column(db.DateTime, default = datetime.utcnow)
     bookings = db.relationship("Booking", backref = "trek", lazy = True)
-    trek_staff_assignment = db.relationship("TrekStaffAssignment", backref = "trek", lazy = True)
+    trek_staff_assignment = db.relationship("TrekStaffAssignment", backref = "trek", lazy = True, cascade = "all, delete-orphan") # one to many, one trek --> many staff assignment | one staff assignment --> one trek
 
 
 # Booking Model : to store trek registrations.
@@ -98,10 +99,10 @@ class Notification(db.Model):
 
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"), nullable = False)
+    booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"), unique = True, nullable = False)
     amount = db.Column(db.Float, nullable = False)
     payment_method = db.Column(db.String(), nullable = False)
-    payment_status = db.Column(db.String(), default = "Pending") #Pending, Successful, Waiting Confirmation
+    payment_status = db.Column(db.String(), default = "Pending") #Pending, Successful, Failed, Waiting Confirmation
     payment_date = db.Column(db.Date, default = datetime.utcnow)
-    booking = db.relationship("Booking", backref = "payment")
+    booking = db.relationship("Booking", backref = "payment", uselist = False)
 
