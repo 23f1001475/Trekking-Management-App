@@ -1,19 +1,29 @@
 from flask import Flask
 from applications.database import db
-from flask_security import Security
+from flask_cors import CORS
+from applications.models import User
+from flask_jwt_extended import JWTManager
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def create_app():
+    
     app = Flask(__name__)
     app.debug = True
-    app.secret_key = "TrekkingApp-secret-key "
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trekking.sqlite3"
+    app.config.from_object("applications.config.Config")
+    CORS(app)
     db.init_app(app)
+    JWTManager(app)
     app.app_context().push()
 
     return app
 
 app = create_app()
-from applications.controllers import *
+
+from applications.controllers.auth import *
+from applications.controllers.admin import *
+from applications.controllers.staff import *
+from applications.controllers.trekkers import *
+
 
 if __name__ == "__main__":
     with app.app_context():
@@ -21,7 +31,7 @@ if __name__ == "__main__":
 
         Admin = User.query.filter_by(username = "admin").first()
         if not Admin:
-            admin = User(username = "admin", password = "admin123", email = "admin123@gmail.com", role = admin)
+            admin = User(username = "admin", password = generate_password_hash("admin"), email = "admin123@gmail.com", phone ="123456789", role = "admin")
             db.session.add(admin)
             db.session.commit()
 
