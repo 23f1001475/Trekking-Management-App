@@ -18,6 +18,7 @@ class User(db.Model):
     deleted_at = db.Column(db.DateTime) 
     bookings = db.relationship("Booking", backref = "trekker", lazy = True)  # one to many , one trekker --> many bookings | one Booking --> one trekker
     assigned_treks = db.relationship("TrekStaffAssignment", backref = "staff", lazy = True) # many to one
+    activity_logs = db.relationship("ActivityLog", backref = "user", lazy = True)
 
 
 #Trek Route Model : To manage trekking routes.
@@ -31,9 +32,12 @@ class TrekRoute(db.Model):
     days_on_trail = db.Column(db.Integer, nullable = False)
     altitude = db.Column(db.Integer, nullable = False)
     description = db.Column(db.Text, nullable = False)
+    image = db.Column(db.String(), nullable = True)
+    is_active = db.Column(db.Boolean, nullable = False, default = True)
     created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc))
     treks = db.relationship("Trek", backref = "route", lazy = True)
+
 
 
 #Trek Model : scheduled treks.
@@ -48,7 +52,6 @@ class Trek(db.Model):
     available_slots = db.Column(db.Integer, nullable = False)
     price = db.Column(db.Numeric(precision = 10, scale = 2), nullable = False)
     status = db.Column(db.String(), default = "Open")   #Open, Closed, Cancelled, Completed
-    approval_status = db.Column(db.String(), default = "Approved") #Approved or Rejected or Waiting
     created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc))
     bookings = db.relationship("Booking", backref = "trek", lazy = True)
@@ -63,7 +66,7 @@ class Booking(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
     booking_date = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc))  # to show the last modification time(when the booking rocord was last changed)
-    booking_status = db.Column(db.String(), default = "Pending") #Pending, Confirmed, Cancelled, Completed
+    booking_status = db.Column(db.String(), default = "Not Booked") 
     participants = db.Column(db.Integer, default = 1)
     total_amount = db.Column(db.Numeric(precision = 10, scale = 2), nullable = False)
 
@@ -89,25 +92,15 @@ class ActivityLog(db.Model):
     created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
 
 
-#Notification Model : for Celery tasks. for Trek approved, Booking confirmed, Trek cancelled.
 
-class Notification(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
-    message_title = db.Column(db.String(), nullable = False)
-    message_body = db.Column(db.Text, nullable = False)
-    is_read = db.Column(db.Boolean, default = False)
-    created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
+# #Payment Model 
 
-
-#Payment Model 
-
-class Payment(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"), unique = True, nullable = False)
-    amount = db.Column(db.Float, nullable = False)
-    payment_method = db.Column(db.String(), nullable = False)
-    payment_status = db.Column(db.String(), default = "Pending") #Pending, Successful, Failed, Waiting Confirmation
-    payment_date = db.Column(db.Date, default = lambda: datetime.now(timezone.utc).date())
-    updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc)) # to show the last modification time(when the payment record was last changed)
-    booking = db.relationship("Booking", backref = "payment", uselist = False)
+# class Payment(db.Model):
+#     id = db.Column(db.Integer, primary_key = True)
+#     booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"), unique = True, nullable = False)
+#     amount = db.Column(db.Float, nullable = False)
+#     payment_method = db.Column(db.String(), nullable = False)
+#     payment_status = db.Column(db.String(), default = "Pending") #Pending, Successful, Failed, Waiting Confirmation
+#     payment_date = db.Column(db.Date, default = lambda: datetime.now(timezone.utc).date())
+#     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc)) # to show the last modification time(when the payment record was last changed)
+#     booking = db.relationship("Booking", backref = "payment", uselist = False)

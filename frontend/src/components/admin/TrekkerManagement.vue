@@ -1,41 +1,53 @@
 <template>
-    <div class="bg-light vh-100">
+    <div class = "bg-light vh-100">
         
         
-        <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
-            <div class="container-fluid px-3">
-                <span class="navbar-brand fw-bold">Trekkers Management</span>
+        <nav class = "navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+
+            <div class = "container-fluid px-3">
+                <span class="navbar-brand fw-bold">
+                    Trekkers Management
+                </span>
                 
                 <div class="ms-auto">
+
                     <form class="d-flex">
-                        <input
-                            class="form-control me-2"
-                            type="search"
-                            placeholder="Search by name, email, or phone"
-                            v-model="searchQuery"
-                        >
-                        <button class="btn btn-outline-success" type="button">Search</button>
+
+                        <input v-model = "searchText" class="form-control me-2" type="search" placeholder="Search by name, email, or phone"   >
+                        
                     </form>
                 </div>
             </div>
         </nav>
 
-        <div class="container py-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class = "container py-4">
+            <div class  = "d-flex justify-content-between align-items-center mb-4">
+
                 <div>
-                    <h3 class="mb-0">All Trekkers</h3>
-                    <small class="text-muted">Total: {{ filteredTrekkers.length }}</small>
+
+                    <h3 class="mb-2"> 
+                        All Trekkers
+                    </h3>
+                    <small class="text-muted fw-semibold">Total: {{ filteredTrekkers.length }} Trekkers</small>
+
                 </div>
+
             </div>
 
             <div class="card shadow-sm">
+
                 <div class="card-header bg-white">
-                    <strong>Trekkers List</strong>
+                    <strong>
+                        Trekkers List
+                    </strong>
                 </div>
 
-                <div class="card-body">
-                    <div class="table-responsive">
+                <div class = "card-body">
+
+                    <div class = "table-responsive">
+                        
                         <table class="table table-hover align-middle">
+
                             <thead class="table-light">
                                 <tr>
                                     <th>Trekker</th>
@@ -117,6 +129,7 @@
                                     </td>
 
                                     <td>
+
                                         <button @click="activateUser(user.id)" class="btn btn-success btn-sm me-2">
                                             UnBlacklist
                                         </button>
@@ -124,6 +137,7 @@
                                         <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm">
                                             Delete
                                         </button>
+
                                     </td>
                                 </tr>
                             </tbody>
@@ -151,32 +165,39 @@ export default {
     data() {
         return {
             trekkers: [],
-            searchQuery: ""
+            searchText: ""
         }
     },
 
     computed: {
         filteredTrekkers() {
 
-            if (!this.searchQuery) {
+            const text = this.searchText.trim().toLowerCase();
+            if (!text) {
 
                 return this.trekkers;
 
             }
 
-            const query = this.searchQuery.toLowerCase();
 
             return this.trekkers.filter(user => 
-                user.name.toLowerCase().includes(query) ||
-                user.email.toLowerCase().includes(query) ||
-                user.phone.includes(query)
+
+                user.name.toLowerCase().includes(text) ||
+                user.email.toLowerCase().includes(text) ||
+                user.phone.includes(text)
+
             );
         },
+
         activeTrekkers() {
-            return this.trekkers.filter(user => Number(user.is_active) === 1);
+
+            return this.filteredTrekkers.filter(user => Number(user.is_active) === 1);
+
         },
         blacklistedTrekkers() {
-            return this.trekkers.filter(user => Number(user.is_active) === 0);
+
+            return this.filteredTrekkers.filter(user => Number(user.is_active) === 0);
+
         }
     },
 
@@ -184,26 +205,39 @@ export default {
         this.fetchTrekkers();
     },
 
+
     methods: {
+
         async fetchTrekkers() {
+
             try {
+
                 const token = localStorage.getItem("token");
+
                 const res = await axios.get("http://127.0.0.1:5000/api/admin/all_trekkers", {
+
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
+
                 });
 
                 if (res.status === 200) {
+
                     this.trekkers = res.data.trekkers;
                     console.log("Trekkers loaded:", this.trekkers);
+
                 }
+
             } catch (error) {
+
                 console.error("Error fetching trekkers:", error);
+
             }
         },
 
         async deactivateUser(userId) {
+
             try {
                 const token = localStorage.getItem("token");
                 const res = await axios.post(`http://127.0.0.1:5000/api/admin/user_deactivate/${userId}`, {}, {
@@ -242,22 +276,32 @@ export default {
         },
 
         async deleteUser(userId) {
+
             if (confirm("Are you sure you want to delete this trekker?")) {
+
                 try {
+
                     const token = localStorage.getItem("token");
+
                     const res = await axios.post(`http://127.0.0.1:5000/api/admin/user_delete/${userId}`, {}, {
+
                         headers: {
                             "Authorization": `Bearer ${token}`
+
                         }
                     });
 
                     if (res.status === 200) {
+
                         alert("Trekker deleted successfully");
                         this.fetchTrekkers();
+                        
                     }
                 } catch (error) {
+
                     console.error("Error deleting trekker:", error);
                     alert("Failed to delete trekker");
+
                 }
             }
         },
