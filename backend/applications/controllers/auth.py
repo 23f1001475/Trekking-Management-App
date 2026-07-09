@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, current_app as app, abort
+from flask import Flask, jsonify, request, current_app as app
 from applications.models import *
 from flask_jwt_extended import create_access_token, jwt_required, current_user, get_jwt, verify_jwt_in_request
 from functools import wraps
@@ -26,6 +26,8 @@ def login():
     
     access_token = create_access_token(identity = str(user.id), additional_claims={"role": user.role}) # identity is the unique identifier for the user, in this case, we are using the user id as the identity
     return jsonify(access_token = access_token, role = user.role, user = {"id": user.id, "username": user.username}), 200
+
+
 
 
 
@@ -100,6 +102,7 @@ def register():
 
 
 
+
 def roles_required(*roles):    # * is used to pass multiple roles as arguments to the decorator function for e.g. @roles_required("admin", "trek_staff" and "trekker") means that the user must have either "admin" or "trek_staff" role to access the resource
     def wrapper(fn):    #fn is the function that is being decorared with @roles_required(*roles)
 
@@ -116,11 +119,5 @@ def roles_required(*roles):    # * is used to pass multiple roles as arguments t
     return wrapper       
             
 
-
-@app.route("/api/logout", methods = ["POST"])
-@jwt_required()
-def logout():
-
-    return jsonify({"msg": "Successfully logged out"}), 200
 
 

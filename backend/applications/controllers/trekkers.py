@@ -175,6 +175,9 @@ def book_trek():
 
 
 
+
+
+
 # cancel a trek booking
 @app.route('/api/trekkers/bookings/<int:booking_id>/cancel', methods = ["POST"])
 @roles_required('trekker')
@@ -234,6 +237,8 @@ def get_bookings():
 
 
 
+
+
 # Get booking detail / status of current booking
 
 @app.route('/api/trekkers/bookings/<int:booking_id>', methods=["GET"])
@@ -255,6 +260,8 @@ def get_booking_detail(booking_id):
         "participants": booking.participants
     }
     return jsonify(booking = data), 200
+
+
 
 
 
@@ -338,30 +345,3 @@ def user_profile():
     return jsonify({"msg": "Profile updated"}), 200
 
 
-# # Search treks by query param 'q' (route name or other text)
-# @app.route('/api/trekkers/treks/search', methods=["GET"])
-# def search_treks():
-#     q = request.args.get('q', '').strip()
-#     status = request.args.get('status')
-
-#     treks = Trek.query.all()
-#     results = []
-#     for t in treks:
-#         route_name = getattr(getattr(t, 'route', None), 'route_name', '') or ''
-#         trek_name = getattr(t, 'name', '') or ''
-#         if q:
-#             if q.lower() in route_name.lower() or q.lower() in trek_name.lower():
-#                 pass
-#             else:
-#                 continue
-#         if status and getattr(t, 'status', None) != status:
-#             continue
-#         results.append({
-#             "trek_id": t.id,
-#             "route_name": route_name,
-#             "trek_name": trek_name,
-#             "status": getattr(t, 'status', None),
-#             "start_date": getattr(t, 'start_date', None).isoformat() if getattr(t, 'start_date', None) else None
-#         })
-
-#     return jsonify(results=results), 200

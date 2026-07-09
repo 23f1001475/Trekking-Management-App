@@ -1,4 +1,3 @@
-
   
 <template>
     <div class="container-fluid bg-light min-vh-100">
@@ -240,10 +239,11 @@ export default {
 
 
     computed: {
-        filteredBookings() {
+
+        filteredBookings() {                                  // filteredBookings depends on bookings
             const search = this.searchText.trim().toLowerCase();
             if (!search) {
-                return this.bookings;
+                return this.bookings;          // since this.bookings changed in fetchBookings() vue automatically reacalculates filteredBookings and so now vue renders whatever filteredBookings returns.
             }
             return this.bookings.filter((booking) => {
                 return [

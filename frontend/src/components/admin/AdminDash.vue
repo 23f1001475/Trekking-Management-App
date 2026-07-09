@@ -10,9 +10,16 @@
                 </span>
 
                 <div class="d-flex align-items-center">
-                    <button @click = "emitReports" class = "btn btn-transparent fw-semibold me-2"> Reports </button>
-                    <button @click = "emitTrekker" class = "btn btn-transparent fw-semibold me-2"> Trekkers </button>
-                    <button @click = "emitTrekStaff" class = "btn btn-transparent fw-semibold me-3"> Trek Staff </button>
+
+                    <button @click = "emitReports" class = "btn btn-transparent fw-semibold me-2">
+                         Reports
+                     </button>
+                    <button @click = "emitTrekker" class = "btn btn-transparent fw-semibold me-2"> 
+                        Trekkers
+                    </button>
+                    <button @click = "emitTrekStaff" class = "btn btn-transparent fw-semibold me-3">
+                         Trek Staff 
+                    </button>
 
                     <form class="d-flex me-3">
 
@@ -367,10 +374,8 @@ export default {
                     // booking.trek_total_bookings,
                     // booking.trek_total_users_booked,
                     // booking.trek_total_amount
-                ]
-                    .join(" ")
-                    .toLowerCase()
-                    .includes(search);
+                ].join(" ").toLowerCase().includes(search);
+
             });
         },
 

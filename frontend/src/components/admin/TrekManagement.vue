@@ -1,39 +1,3 @@
-<!-- <template>
-
-    <div>
-
-        <h1>Trek Management</h1>
-
-    </div>
-
-    <div>
-        Trek Routes
-    </div>
-
-    <div>
-        <button class = "btn btn-primary">
-            schedule this trek
-        </button>
-    </div>
-
-    <div>
-        scheduled treks
-    </div>
-    <div>
-        <button class = "btn btn-primary">
-              update scheduled trek
-        </button>
-    </div>
-    <div>
-        <button @click = "goBack()" class = "btn btn-secondary">
-            Go Back
-        </button>
-    </div>
-
-
-</template> -->
-
-
 
 <template>
     <div class = "container-fluid bg-light vh-100">

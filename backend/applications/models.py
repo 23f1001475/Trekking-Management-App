@@ -12,7 +12,7 @@ class User(db.Model):
     role = db.Column(db.String(), nullable = False, default = "trekker")
     phone = db.Column(db.String(), nullable = False, unique = True)
     is_active = db.Column(db.Boolean, nullable = False, default = True)
-    created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc)) #usign lambda function to set created_at in UTC timezone as datetime.utcnow() returns time in UTC timezone but without timezone info, so we use lambda function to set created_at with timezone info.
+    created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))                  #usign lambda function to set created_at in UTC timezone as datetime.utcnow() returns time in UTC timezone but without timezone info, so we use lambda function to set created_at with timezone info.
     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc)) #onupdate is used to update the updated_at field whenever the user is updated. timezone = True is to make the datetime object timezone aware. if timezone = False, the datetime object will be timezone naive.
     is_deleted = db.Column(db.Boolean, default = False)
     deleted_at = db.Column(db.DateTime) 
@@ -82,25 +82,5 @@ class TrekStaffAssignment(db.Model):
     assigned_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
 
 
-# Activity loig Model : for Admin Reports.
-
-class ActivityLog(db.Model):
-    __tablename__ = "activity_log"
-    id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    action = db.Column(db.String(), nullable = False)   # trek_created, staff_created, staff_updated, booking_createed etc
-    created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
 
 
-
-# #Payment Model 
-
-# class Payment(db.Model):
-#     id = db.Column(db.Integer, primary_key = True)
-#     booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"), unique = True, nullable = False)
-#     amount = db.Column(db.Float, nullable = False)
-#     payment_method = db.Column(db.String(), nullable = False)
-#     payment_status = db.Column(db.String(), default = "Pending") #Pending, Successful, Failed, Waiting Confirmation
-#     payment_date = db.Column(db.Date, default = lambda: datetime.now(timezone.utc).date())
-#     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc)) # to show the last modification time(when the payment record was last changed)
-#     booking = db.relationship("Booking", backref = "payment", uselist = False)
