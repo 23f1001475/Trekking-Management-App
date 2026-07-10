@@ -12,6 +12,7 @@ from datetime import datetime
 @app.route('/api/trekkers/dashboard', methods = ["GET"])
 @roles_required('trekker')
 def user_dashboard():
+
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
 
@@ -19,7 +20,7 @@ def user_dashboard():
 
     available_treks = Trek.query.filter_by(status = "Open").count()
 
-    booked_treks = Booking.query.filter_by(user_id = user.id).count()
+    booked_treks = Booking.query.filter_by(user_id = user.id, booking_status = "Booked").count()
 
 
     available = Trek.query.filter_by(status = "Open").all()
@@ -40,8 +41,6 @@ def user_dashboard():
         }
 
         available_list.append(trek_data)
-
-
 
 
     # Booked treks for current user
@@ -90,6 +89,7 @@ def get_trek(trekID):
             "start_date": trek.start_date.isoformat(),
             "end_date" : trek.end_date.isoformat(),
             "difficulty" : trek.route.difficulty,
+            "altitude" : trek.route.altitude,
             "price": trek.price,
             "available_slots": trek.available_slots,
             "status": trek.status,
@@ -98,6 +98,7 @@ def get_trek(trekID):
     
 
     return jsonify(trek = trek_data), 200
+
 
 
 
@@ -124,20 +125,7 @@ def book_trek():
 
     if not trek:
         return jsonify({"msg": "Trek not found"}), 404
-
-    trek_data = {
-
-            "trek_id": trek.id,
-            "trek_name": trek.route.route_name,
-            "status": trek.status,
-            "start_date": trek.start_date.isoformat(),
-            "end_date" : trek.end_date.isoformat(),
-            "difficulty" : trek.route.difficulty,
-            "price": trek.price,
-            "description" : trek.route.description, 
-        }
-
-    
+ 
 
     if trek.status != "Open":
         return jsonify({"msg": "This trek is not open for booking"}), 400
@@ -146,16 +134,16 @@ def book_trek():
         return jsonify({"msg": "No slots available"}), 400
 
     # Prevent duplicate booking
-    existing_booking = Booking.query.filter_by( trek_id=trek.id , user_id=user.id).first()
+    existing_booking = Booking.query.filter_by( trek_id=trek.id , user_id=user.id, booking_status = "Booked").first()
 
     if existing_booking:
         return jsonify({"msg": "You have already booked this trek"}), 400
 
     booking = Booking(
-        trek_id=trek.id,
-        user_id=user.id,
-        booking_status="Booked",
-        booking_date=datetime.utcnow(),
+        trek_id = trek.id,
+        user_id = user.id,
+        booking_status = "Booked",
+        booking_date = datetime.utcnow(),
         total_amount = trek.price,
     )
 
@@ -172,6 +160,8 @@ def book_trek():
 
     
     return jsonify({"msg": "Booking created",  "booking_id": booking.id, "trek_id": trek.id, "available_slots" : trek.available_slots}), 201
+
+
 
 
 
@@ -213,6 +203,7 @@ def cancel_booking(booking_id):
 
 
 
+
 @app.route('/api/trekkers/bookings', methods=["GET"])   # to show all bookings for the current user
 @roles_required('trekker')
 
@@ -232,6 +223,8 @@ def get_bookings():
         data.append(booking_data)
 
     return jsonify(bookings = data), 200
+
+
 
 
 
@@ -273,75 +266,99 @@ def get_booking_detail(booking_id):
 @roles_required('trekker')
 def trekking_history():
 
-    # Return all bookings for now; front-end can filter by status if needed
-    bookings = Booking.query.filter_by(user_id = current_user.id).order_by(Booking.booking_date.desc()).all()
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    bookings = Booking.query.filter_by(user_id = user.id).order_by(Booking.booking_date.desc()).all()
     
+
+    history_data = []
+
     for booking in bookings:
         if booking.booking_status in ['Booked', 'Cancelled']:
-            history_data = {
+
+            history = {
+
                 "booking_id": booking.id,
                 "trek_id": booking.trek.id,
-                "trek_name": booking.trek.route.route_name if booking.trek.route else None,
-                "booking_date": booking.booking_date.isoformat() if booking.booking_date else None,
-                "status": booking.booking_status
+                "trek_name": booking.trek.route.route_name,
+                "booking_date": booking.booking_date.isoformat(),
+                "end_date" : booking.trek.end_date.isoformat(),
+                "price" : booking.total_amount,
+                "status": booking.booking_status,
+                "trek_status" : booking.trek.status   #if trek_status = closed then trek is completed
             }
             
-            history_data.append(history_data)
+            history_data.append(history)
 
-    return jsonify(history=[history_data]), 200
-
-
+    return jsonify(history_data = history_data), 200
 
 
 
 
 
 
-# Get or edit user profile
+
+
+# this is to Get or edit user profile
 @app.route('/api/trekkers/profile', methods=["GET", "PUT"])
 @roles_required('trekker')
+
 def user_profile():
+
+    user_id = get_jwt_identity()
+    # user = User.query.get(user_id)
+    u = User.query.get(user_id)
+
+    if not u:
+            return jsonify({"msg": "User not found"}), 400
+
     if request.method == 'GET':
-        u = current_user
+
         return jsonify(
-            id=u.id,
-            username=u.username,
-            email=u.email,
-            phone=u.phone,
-            role=u.role
+
+            id = u.id,
+            username = u.username,
+            email = u.email,
+            phone = u.phone,
+
         ), 200
+    
+
 
     # PUT - update profile
 
-    data = request.json or {}
-    username = data.get('username')
-    email = data.get('email')
-    phone = data.get('phone')
+    user_data = request.json or {}
+
+    username = user_data.get('username')
+    email = user_data.get('email')
+    phone = user_data.get('phone')
 
     # check uniqueness
 
-    if username and User.query.filter(User.username == username, User.id != current_user.id).first():
+
+
+    if username and User.query.filter(User.username == username, User.id != u.id).first():
         return jsonify({"msg": "username already exists"}), 400
     
-    if email and User.query.filter(User.email == email, User.id != current_user.id).first():
+    if email and User.query.filter(User.email == email, User.id != u.id).first():
         return jsonify({"msg": "email already exists"}), 400
     
-    if phone and User.query.filter(User.phone == phone, User.id != current_user.id).first():
+    if phone and User.query.filter(User.phone == phone, User.id != u.id).first():
         return jsonify({"msg": "phone number already exists"}), 400
 
-    try:
-        if username:
-            current_user.username = username
-        if email:
-            current_user.email = email
-        if phone:
-            current_user.phone = phone
 
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"msg": "Could not update profile", "error": str(e)}), 500
+    if username:
+        u.username = username
+
+    if email:
+        u.email = email
+    if phone:
+        u.phone = phone
+
+    db.session.commit()
 
     return jsonify({"msg": "Profile updated"}), 200
+    
 
 

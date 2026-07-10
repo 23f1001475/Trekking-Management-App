@@ -126,7 +126,7 @@ def create_trek_route():
 
     existing_route = TrekRoute.query.filter_by(route_name=route_name).first()
 
-    if existing_route:
+    if existing_route:                                           # to check if route exists
         errors["route_name"].append("Trek name already exists")
 
 
@@ -136,7 +136,7 @@ def create_trek_route():
             del errors[key]
 
     if errors:
-        return jsonify({"errors": errors}), 400              # to check if route exists
+        return jsonify({"errors": errors}), 400              
 
 
 
@@ -428,6 +428,11 @@ def delete_scheduled_trek(trek_id):
 
     if not trek:
         return jsonify({"msg": "Trek does not exist"}), 400
+    
+    bookings = Booking.query.filter_by(trek_id = trek_id).all()
+
+    for booking in bookings:
+        booking.status = "Cancelled"        #if scheduled trek cancelled by admin , all users who have booked that trek will be cancelled
 
     db.session.delete(trek)
     db.session.commit()
@@ -717,6 +722,7 @@ def delete_user(user_id):
     if not user:
         return jsonify({"msg": "User does not exist"}), 400
 
+    user.is_active = False
     user.is_deleted = True
     db.session.commit()
 
@@ -732,7 +738,7 @@ def delete_user(user_id):
 @roles_required('admin')
 
 def all_trekkers():
-    trekkers = User.query.filter_by(role = "trekker").all()
+    trekkers = User.query.filter_by(role = "trekker", is_deleted = False).all()
     result = []
 
     for trekker in trekkers:
@@ -760,7 +766,7 @@ def all_trekkers():
 
 def all_staffs():
     
-    staffs = User.query.filter_by(role = "trek_staff").all()
+    staffs = User.query.filter_by(role = "trek_staff", is_deleted = False).all()
     result = []
 
     for staff in staffs:

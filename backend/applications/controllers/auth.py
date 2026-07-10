@@ -76,8 +76,12 @@ def register():
         errors["phone"].append("phone number already exists")
 
 
+    for key in list(errors.keys()):    # to remove empty lists (of items from the dictionary)
+        if not errors[key]:            # if the key is empty, remove it from the dictionary
+            del errors[key]
+
     if errors:
-        return jsonify(errors), 400
+        return jsonify({"errors": errors}), 400            
     
     
     if not username or not password or not email or not phone or not role:

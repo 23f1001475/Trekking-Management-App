@@ -51,7 +51,7 @@ class Trek(db.Model):
     total_slots = db.Column(db.Integer, nullable = False)
     available_slots = db.Column(db.Integer, nullable = False)
     price = db.Column(db.Numeric(precision = 10, scale = 2), nullable = False)
-    status = db.Column(db.String(), default = "Open")   #Open, Closed, Cancelled, Completed
+    status = db.Column(db.String(), default = "Open")   #Open, Closed
     created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc))
     bookings = db.relationship("Booking", backref = "trek", lazy = True)
@@ -84,3 +84,11 @@ class TrekStaffAssignment(db.Model):
 
 
 
+# Activity loig Model : for Admin Reports.
+
+class ActivityLog(db.Model):
+    __tablename__ = "activity_log"
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    action = db.Column(db.String(), nullable = False)   # trek_created, staff_created, staff_updated, booking_createed etc
+    created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
