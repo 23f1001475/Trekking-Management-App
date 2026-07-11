@@ -175,6 +175,7 @@ def create_trek_route():
 
 @app.route("/api/admin/all_treks", methods = ["GET"])  # to get all created trek routes (from here admin can choose the trek he wants to view)
 @roles_required('admin')
+@cache.cached(timeout = 60)
 
 def get_all_treks():
 
@@ -323,6 +324,7 @@ def schedule_trek(route_id):
 
 @app.route("/api/admin/scheduled_treks", methods = ["GET"])  # to get all scheduled treks
 @roles_required('admin')
+@cache.cached(timeout = 60)
 
 def get_all_scheduled_treks():
     treks = Trek.query.all()
@@ -450,6 +452,7 @@ def delete_scheduled_trek(trek_id):
 
 @app.route("/api/admin/bookings", methods = ["GET"])  # to get all bookings
 @roles_required('admin')    
+@cache.cached(timeout = 60)
 
 def get_all_bookings():
     bookings = Booking.query.all()
@@ -627,6 +630,7 @@ def assign_staff(trek_id):
 
 @app.route("/api/admin/treks/<int:trek_id>/staff", methods = ["GET"])  # to get all staff assigned to a trek
 @roles_required('admin')
+@cache.cached(timeout = 60)
 
 def get_assigned_staff(trek_id):
     trek = Trek.query.get(trek_id)
@@ -738,6 +742,7 @@ def delete_user(user_id):
 
 @app.route("/api/admin/all_trekkers", methods = ["GET"])
 @roles_required('admin')
+@cache.cached(timeout = 60)
 
 def all_trekkers():
     trekkers = User.query.filter_by(role = "trekker", is_deleted = False).all()
@@ -765,6 +770,7 @@ def all_trekkers():
 
 @app.route("/api/admin/all_staffs", methods = ["GET"])
 @roles_required('admin')
+@cache.cached(timeout = 60)
 
 def all_staffs():
     
@@ -796,6 +802,7 @@ def all_staffs():
 
 @app.route("/api/admin/reports", methods = ["GET"])  # to get all reports
 @roles_required('admin')
+@cache.cached(timeout = 60)
 
 def get_reports():
     

@@ -1,6 +1,7 @@
 
 from applications.models import *
 from applications.database import db
+from applications.extensions import cache
 from flask import url_for
 from flask_jwt_extended import get_jwt_identity
 from .auth import * 
@@ -9,6 +10,7 @@ from .auth import *
 
 @app.route("/api/staff/dashboard", methods = ["GET"])  # to get the staff dashboard data
 @roles_required('trek_staff')
+@cache.cached(timeout = 60)
 
 def staff_dashboard():
     
@@ -56,9 +58,10 @@ def staff_dashboard():
 
 
 
-@app.route("/api/staff/treks/<int:trek_id>", methods = ["GET"]) #to get the specific staff trek assigned to them
+@app.route("/api/staff/treks/<int:trek_id>", methods = ["GET"]) #to get the specific  trek assigned to them
 
 @roles_required('trek_staff')
+@cache.cached(timeout = 60)
 
 def get_assigned_trek(trek_id):
 
@@ -115,6 +118,7 @@ def get_assigned_trek(trek_id):
 @app.route("/api/staff/treks/<int:trek_id>/participants", methods = ["GET"]) #to get the participants of the specific trek assigned to the staff
 
 @roles_required('trek_staff')
+@cache.cached(timeout = 60)
 
 def get_participants(trek_id):
 

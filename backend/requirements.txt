@@ -1,4 +1,10 @@
 flask
 flask_sqlalchemy
-flask_security_too
-flask_restful
+
+flask_cors
+Flask-Caching
+flask_jwt_extended
+werkzeug.security
+dotenv
+celery 
+redis

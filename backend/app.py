@@ -4,8 +4,14 @@ from flask_cors import CORS
 from applications.models import User
 from flask_jwt_extended import JWTManager
 from werkzeug.security import generate_password_hash, check_password_hash
+from applications.extensions import cache
+
+
+
+# cache = Cache(app)   #must be initialized as global variabel cuz then only the admin.py and other files can access it
 
 def create_app():
+    
     
     app = Flask(__name__)
     app.debug = True
@@ -15,6 +21,10 @@ def create_app():
 
     db.init_app(app)
     JWTManager(app)
+
+    # cache = Cache(app)
+    cache.init_app(app)
+
     app.app_context().push()
 
     return app

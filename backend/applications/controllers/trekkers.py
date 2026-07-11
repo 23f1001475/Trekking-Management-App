@@ -4,13 +4,15 @@ from .auth import *
 from flask_jwt_extended import jwt_required, current_user, get_jwt_identity
 from werkzeug.security import generate_password_hash
 from datetime import datetime
-
+from applications.extensions import cache
 
 
 # User dashboard: Available treks, Booked treks, Trek status
 
 @app.route('/api/trekkers/dashboard', methods = ["GET"])
 @roles_required('trekker')
+@cache.cached(timeout = 60)
+
 def user_dashboard():
 
     user_id = get_jwt_identity()
@@ -74,6 +76,8 @@ def user_dashboard():
 
 @app.route('/api/trekkers/treks/<int:trekID>', methods=["GET"])    # for viewing all treks
 @roles_required('trekker')
+@cache.cached(timeout = 60)
+
 def get_trek(trekID):
 
     trek = Trek.query.get(trekID)
@@ -232,27 +236,27 @@ def get_bookings():
 
 
 
-# Get booking detail / status of current booking
+# # Get booking detail / status of current booking
 
-@app.route('/api/trekkers/bookings/<int:booking_id>', methods=["GET"])
-@roles_required('trekker')
+# @app.route('/api/trekkers/bookings/<int:booking_id>', methods=["GET"])
+# @roles_required('trekker')
 
-def get_booking_detail(booking_id):
+# def get_booking_detail(booking_id):
 
-    booking = Booking.query.filter_by(id = booking_id, user_id = current_user.id).first()
+#     booking = Booking.query.filter_by(id = booking_id, user_id = current_user.id).first()
 
-    if not booking:
-        return jsonify({"msg": "Booking not found"}), 404
+#     if not booking:
+#         return jsonify({"msg": "Booking not found"}), 404
 
-    data = {
-        "booking_id": booking.id,
-        "trek_id": booking.trek.id,
-        "trek_name": booking.trek.route.route_name if booking.trek.route else None,
-        "booking_date": booking.booking_date.isoformat() if booking.booking_date else None,
-        "status": booking.booking_status,
-        "participants": booking.participants
-    }
-    return jsonify(booking = data), 200
+#     data = {
+#         "booking_id": booking.id,
+#         "trek_id": booking.trek.id,
+#         "trek_name": booking.trek.route.route_name if booking.trek.route else None,
+#         "booking_date": booking.booking_date.isoformat() if booking.booking_date else None,
+#         "status": booking.booking_status,
+#         "participants": booking.participants
+#     }
+#     return jsonify(booking = data), 200
 
 
 
@@ -264,6 +268,7 @@ def get_booking_detail(booking_id):
 
 @app.route('/api/trekkers/history', methods=["GET"])
 @roles_required('trekker')
+
 def trekking_history():
 
     user_id = get_jwt_identity()
