@@ -45,8 +45,8 @@
                             <option value = "Open">Open</option>
                             <option value = "Closed">Closed</option>
                             <option value = "Cancelled">Cancelled</option>
-                            <option value = "Completed">Started</option>
-                            <option value = "Completed">On Going</option>
+                            <option value = "Started">Started</option>
+                            <option value = "On Going">On Going</option>
                             <option value = "Completed">Completed</option>
 
                         </select>

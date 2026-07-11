@@ -1,6 +1,6 @@
 <template>
 
-
+    <div>
 
     <div>
 
@@ -12,6 +12,7 @@
       
       <TrekStatusManagement @go-back = "handleGoBack"  :trek-id = "selectedTrekID" v-if = "ShowTrekStatusManagement"/>
 
+    </div>
     </div>
 
 

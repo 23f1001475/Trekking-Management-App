@@ -504,9 +504,13 @@ export default {
 
         async handleAssignStaff(staffId) {
             try {
+
                 const token = localStorage.getItem("token");
+
                 const res = await axios.post(
+
                     `http://127.0.0.1:5000/api/admin/treks/${this.trekId}/assign_staff`,
+
 
                     { staff_id: staffId },
                     
@@ -522,31 +526,46 @@ export default {
         },
 
         async handleRemoveStaff(assignmentId) {
+
             try {
+
                 const token = localStorage.getItem("token");
+
                 const res = await axios.post(
+
                     `http://127.0.0.1:5000/api/admin/assignments/${assignmentId}`,
+
                     { trek_id: this.trekId },
+
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 if (res.status === 200) {
+
                     await this.fetchAssignedStaff();
+
                 }
             } catch (error) {
+
                 console.error("Error removing staff:", error);
                 alert("Could not remove staff.");
+                
             }
         },
 
         async handleDeleteTrek() {
+
             if (!confirm("Are you sure you want to delete this trek? This cannot be undone.")) return;
+
             try {
                 const token = localStorage.getItem("token");
+
                 const res = await axios.post(
+
                     `http://127.0.0.1:5000/api/admin/scheduled_treks/${this.trekId}/delete_trek`,
                     {},
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
+                
                 if (res.status === 200) {
                     alert("Trek deleted successfully");
                     this.$emit("go-back");

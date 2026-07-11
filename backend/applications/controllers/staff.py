@@ -157,7 +157,7 @@ def get_participants(trek_id):
 
 
 
-@app.route("/api/staff/trek_update/<int:trek_id>/slots", methods = ["POST"]) # to update the slots of the trek assigned to the staff
+@app.route("/api/staff/trek_update/<int:trek_id>/slots", methods = ["POST"]) # to update the slots and status of the trek assigned to the staff
 
 @roles_required('trek_staff')
 def update_trek_slots(trek_id):

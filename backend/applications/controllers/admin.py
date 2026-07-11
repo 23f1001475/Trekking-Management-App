@@ -1,11 +1,12 @@
 from .auth import *
-from applications.models import *   
-
+from applications.models import * 
+from applications.extensions import cache
 from flask_jwt_extended import get_jwt_identity
 
 
 @app.route('/api/admin/dashboard', methods = ["GET"])
 @roles_required('admin')
+@cache.cached(timeout = 60)
 
 def admin_dashboard():
     user_id = get_jwt_identity()
@@ -432,7 +433,8 @@ def delete_scheduled_trek(trek_id):
     bookings = Booking.query.filter_by(trek_id = trek_id).all()
 
     for booking in bookings:
-        booking.status = "Cancelled"        #if scheduled trek cancelled by admin , all users who have booked that trek will be cancelled
+        booking.booking_status = "Cancelled"        #if scheduled trek cancelled by admin , all users who have booked that trek will be cancelled
+        # booking.trek.status = "Closed"
 
     db.session.delete(trek)
     db.session.commit()

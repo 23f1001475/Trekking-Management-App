@@ -216,7 +216,7 @@ export default {
                 });
                 if (res.status === 200) {
                     this.new_trek_routes = res.data.trek_routes;
-                    console.log("Trek routes loaded:", this.new_trek_routes);
+                    console.log(this.new_trek_routes);
                 }
             } catch (error) {
                 console.error("Error fetching trek routes:", error);
