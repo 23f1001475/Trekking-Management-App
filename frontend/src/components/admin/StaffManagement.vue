@@ -42,7 +42,7 @@
                         </strong>
                     </div>
                     <div class = "card-body">
-                        <div class = table-responsive>
+                        <div class = "table-responsive"   style = "max-height: 300px; overflow-y: auto;">
                         <table class = "table table-hover table-striped table-bordered">
                             <thead>
                                 <tr>
@@ -108,8 +108,8 @@
                         </strong>     
                     </div>
 
-                    <div class = "card-body">
-                        <div class = table-responsive>
+                    <div class = "card-body table-responsive"  style = "max-height: 100px; overflow-y: auto;">
+                        <div>
                         <table class = "table table-hover table-striped table-bordered">
                             <thead>
                                 <tr>

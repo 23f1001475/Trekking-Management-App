@@ -161,7 +161,7 @@
 
                     </div>
 
-                    <div v-else class = "table-responsive">
+                    <div v-else class = "table-responsive"  style = "max-height: 400px; overflow-y: auto;">
                         <table class = "table table-hover table-striped align-middle">
                             
                             <thead>
@@ -238,7 +238,7 @@
 
                     </div>
 
-                    <div v-else class="table-responsive">
+                    <div v-else class="table-responsive"  style = "max-height: 400px; overflow-y: auto;">
 
                         <table class="table table-hover table-striped align-middle">
 

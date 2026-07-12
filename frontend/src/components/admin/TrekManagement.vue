@@ -33,8 +33,9 @@
                                 Trek routes you have created but not scheduled
                             </p>
                         </div>
-                        <div class = "card-body">
-                           <table class = "table table-hover table-striped">
+                        <div class = "card-body table-responsive" style = "max-height: 300px; overflow-y: auto;">
+                        
+                           <table class = "table  table-hover table-striped">
                                 <thead>
                                     <tr>
                                         <th>
@@ -93,7 +94,7 @@
                                 Treks that are Scheduled and Publised
                             </p>
                         </div>
-                        <div class = "card-body">
+                        <div class = "card-body table-responsive" style = "max-height: 300px; overflow-y: auto;">
                            <table class = "table table-hover table-striped">
                                 <thead>
                                     <tr>

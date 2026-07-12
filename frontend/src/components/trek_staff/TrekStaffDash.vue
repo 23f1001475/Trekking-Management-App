@@ -76,7 +76,7 @@
                         Assigned Treks
                     </div>
                     <div class = "card-body p-4">
-                        <div class = "table-responsive  rounded-4 border">
+                        <div class = "table-responsive  rounded-4 border" style = "max-height: 400px; overflow-y: auto;">
                         <table class = "table table-hover table-striped table-bordered"  style = "border-radius: 20px;">
                             <thead>
                                 <tr>

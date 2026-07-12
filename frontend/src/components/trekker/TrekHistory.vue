@@ -43,8 +43,8 @@
          
                     </div>
 
-                    <div class = "card-body">
-                        <table class = "table table-hover table-responsive table-bordered table-striped">
+                    <div class = "card-body  table-responsive" style = "max-height: 400px; overflow-y: auto;">
+                        <table class = "table table-hover table-bordered table-striped" >
                             <thead>
                                 <tr>
                                     <th>

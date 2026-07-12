@@ -174,7 +174,9 @@
 
                     </div>
 
-                    <table v-else class="table table-hover table-striped">
+
+                    <div v-else style = "max-height : 300px ; overflow-y : scroll">
+                    <table class="table table-responsive table-hover table-striped">
                         <thead>
                             <tr>
                                 <th>
@@ -213,6 +215,7 @@
                         </tbody>
                     </table>
                 </div>
+                </div>
             </div>
 
 
@@ -239,7 +242,9 @@
                         No staff available.
 
                     </div>
-                    <table v-else class="table table-hover table-striped">
+
+                    <div v-else style = "max-height: 300px; overflow-y: auto;">
+                    <table  class="table table-responsive table-hover table-striped">
                         <thead>
                             <tr>
                                 <th>
@@ -282,6 +287,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 

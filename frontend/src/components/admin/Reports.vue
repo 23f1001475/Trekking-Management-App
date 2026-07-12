@@ -159,7 +159,7 @@
 
                 <div class = "card-body p-4">
 
-                    <div class = "table-responsive  rounded-4 border">
+                    <div class = "table-responsive  rounded-4 border"    style = "max-height: 300px; overflow-y: auto;">
                         <table class = "table table-hover table-bordered table-striped" style = "border-radius: 20px;">
                             
                             <thead>
@@ -215,7 +215,7 @@
 
                 <div class = "card-body p-4">
 
-                    <div class = "table-responsive  rounded-4 border">
+                    <div class = "table-responsive  rounded-4 border"     style = "max-height: 300px; overflow-y: auto;">
                         <table class = "table table-hover table-bordered table-striped" style = "border-radius: 20px;">
                             
                             <thead>
@@ -274,7 +274,7 @@
 
                 <div class = "card-body p-4">
 
-                    <div class = "table-responsive  rounded-4 border">
+                    <div class = "table-responsive  rounded-4 border"     style = "max-height: 300px; overflow-y: auto;">
                         <table class = "table table-hover table-bordered table-striped" style = "border-radius: 20px;">
                            
                             <thead>
