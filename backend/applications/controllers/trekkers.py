@@ -1,10 +1,10 @@
 from flask import jsonify, request, current_app as app, url_for
 from applications.models import *
 from .auth import *
-from flask_jwt_extended import jwt_required, current_user, get_jwt_identity
-from werkzeug.security import generate_password_hash
+from flask_jwt_extended import current_user, get_jwt_identity
 from datetime import datetime
 from applications.extensions import cache
+
 
 
 # User dashboard: Available treks, Booked treks, Trek status
@@ -291,14 +291,32 @@ def trekking_history():
                 "end_date" : booking.trek.end_date.isoformat(),
                 "price" : booking.total_amount,
                 "status": booking.booking_status,
-                "trek_status" : booking.trek.status   #if trek_status = closed then trek is completed
+                "trek_status" : booking.trek.status  
             }
-            
             history_data.append(history)
 
     return jsonify(history_data = history_data), 200
 
 
+
+
+
+# for user triggered job to export trekking history as csv
+
+@app.route("/api/trekkers/history/export", methods = ["POST"])
+@roles_required('trekker')
+
+def export_history_csv():
+
+    from tasks import export_user_history_csv    #imported here to avoid circular import
+
+
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    task = export_user_history_csv.delay(user.id)     #celery task ,  delay() is used to schedule the task, it will create a task job object. this is the job the worker will pick up, use the user_id
+
+    return jsonify({"msg" : "Export Started", "task_id" : task.id}), 200
 
 
 

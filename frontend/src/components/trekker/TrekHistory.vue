@@ -29,9 +29,17 @@
 
                     <div class = "card-header border-bottom">
 
-                           <div class = "fw-semibold">
+                           <div class = "fw-semibold d-flex justify-content-between">
                                Trek History
+
+    
+                                <button @click = "exportHistory()" class = "btn rounded-pill btn-secondary">
+                                    Export History
+                                </button>
+                                
                             </div> 
+
+                            
          
                     </div>
 
@@ -155,6 +163,24 @@ export default {
 
             return String(dateValue).slice(0, 10);
             
+        },
+
+        exportHistory() {
+            try {
+                const token = localStorage.getItem("token");
+
+                axios.post('http://127.0.0.1:5000/api/trekkers/history/export', {}, {
+
+                    headers : {
+
+                        "Authorization" : `Bearer ${token}`
+                    }   
+                });
+                alert("History exported successfully, check your email.");
+
+            } catch (error) {
+                console.error("Error exporting history:", error);
+            }
         }
 
         
