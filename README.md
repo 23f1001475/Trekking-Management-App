@@ -19,18 +19,25 @@ assignments, trek scheduling and admin operations.
 
 ## Project Structure
 
-├── frontend/          # Vue 3 frontend app
-│   ├── src/
-│   └── public/
-|
-└── backend/              # Flask REST API
-    |
-    ├── applications/
-    │   ├── controllers/
-    │   └── models/
-    |
-    ├── app.py
-    └── celery_worker.py
+Backend            Flask REST API 
+- app.py
+- applications/
+  - controllers/
+  - models.py
+  - config.py
+- static/
+- templates/
+- celery_worker.py
+- tasks.py
+
+Frontend          Vue 3 frontend app
+- src/
+  - components/
+  - views/
+  - router/
+  - App.vue
+
+README.md
 
 
 ## Features

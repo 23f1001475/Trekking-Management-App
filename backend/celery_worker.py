@@ -40,11 +40,11 @@ celery_app.conf.beat_schedule = {
     
     'monthly-user-report' : {           #beat scheduled task name
         'task' : 'tasks.send_monthly_user_report',            #send_monthly_user_report is the function name
-        'schedule' : crontab(hour = 14, day_of_month = 13, minute = 48),
+        'schedule' : crontab(hour = 18, day_of_month = 13, minute = 40),
     },
 
     'daily-reminder' : {
         'task' : 'tasks.send_daily_reminder',
-        'schedule' : crontab(hour = 14, minute = 48),
+        'schedule' : crontab(hour = 18, minute = 40),
     }
 }
