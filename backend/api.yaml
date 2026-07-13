@@ -1,0 +1,1091 @@
+openapi: 3.0.0
+
+
+info:
+  title: Trekking Management App API
+  version: 1.0.0
+  description: API for managing treks, bookings, staff and trekkers
+
+servers:
+  - url: http://localhost:5000
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+           
+
+
+                                                                        
+# AUTH             
+                                                                        
+/api/login:                                                             
+  post:                                                                 
+    summary: Login  
+
+    tags:
+      - Authentication   
+
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            required: [username, password]                              
+            properties:                                                 
+              username:                                                 
+                type: string                                            
+                description: Username or email                          
+              password:                                                 
+                type: string     
+
+    responses:                                                          
+      200:                                                              
+        description: Login successful                                          
+
+      400:                                                              
+        description: Bad username or password   
+
+      403:                                                              
+        description: Account deactivated or deleted    
+
+
+
+                                                                        
+/api/register:
+  post:
+    summary: Register new user
+    description: Creates a new user account.
+
+    tags:
+      - Authentication
+
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            required:
+              - username
+              - email
+              - phone
+              - password
+              - role
+            properties:
+              username:
+                type: string
+              email:
+                type: string
+              phone:
+                type: string
+              password:
+                type: string
+              role:
+                type: string
+
+    responses:
+      "201":
+        description: User registered successfully
+
+      "400":
+        description: Validation failed                               
+
+
+
+
+
+# TREKKER     
+
+                                                                          
+/api/trekkers/dashboard:                                                
+  get:                                                                  
+    summary: Trekker dashboard                                          
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []                                                  
+    responses:                                                          
+      200:                                                              
+        description: Dashboard data                                     
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                trekker_name:                                           
+                  type: string                                          
+                available_treks_count:                                  
+                  type: integer                                         
+                booked_treks_count:                                     
+                  type: integer                                         
+                available_treks:                                        
+                  type: array                                           
+                  items:                                                
+                    type: object                                        
+                    properties:                                         
+                      trek_id:                                          
+                        type: integer                                   
+                      trek_name:                                        
+                        type: string                                    
+                      status:                                           
+                        type: string                                    
+                      start_date:                                       
+                        type: string                                    
+                      end_date:                                         
+                        type: string                                    
+                      available_slots:                                  
+                        type: integer                                   
+                      price:                                            
+                        type: number                                    
+                      difficulty:                                       
+                        type: string                                    
+                booked_treks:                                           
+                  type: array                                           
+                  items:                                                
+                    type: object    
+
+
+
+                                                                        
+/api/trekkers/treks/{trek_id}:                                          
+  get:                                                                  
+    summary: Get trek details (for booking)                             
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []     
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer  
+
+    responses:                                                          
+      200:                                                              
+        description: Trek details                                       
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                trek:                                                   
+                  type: object                                          
+                  properties:                                           
+                    trek_id:                                            
+                      type: integer                                     
+                    trek_name:                                          
+                      type: string                                      
+                    description:                                        
+                      type: string                                      
+                    location:                                           
+                      type: string                                      
+                    start_date:                                         
+                      type: string                                      
+                    end_date:                                           
+                      type: string                                      
+                    difficulty:                                         
+                      type: string                                      
+                    altitude:                                           
+                      type: string                                      
+                    price:                                              
+                      type: number                                      
+                    available_slots:                                    
+                      type: integer                                     
+                    status:                                             
+                      type: string                                      
+                    image:                                              
+                      type: string    
+
+
+
+
+
+/api/trekkers/bookings:                                                 
+  post:                                                                 
+    summary: Book a trek                                                
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []           
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            required: [trek_id]                                         
+            properties:                                                 
+              trek_id:                                                  
+                type: integer  
+    responses:                                                          
+      201:                                                              
+        description: Booking created                                    
+    
+      400:                                                              
+        description: Trek not open, no slots, or already booked    
+
+      404:                                                              
+        description: Trek not found                                     
+                                                                        
+  get:                                                                  
+    summary: Get all my bookings                                        
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: [] 
+    responses:                                                          
+      200:                                                              
+        description: List of bookings                                   
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                bookings:                                               
+                  type: array                                           
+                  items:                                                
+                    type: object                                        
+                    properties:                                         
+                      booking_id:                                       
+                        type: integer                                   
+                      trek_id:                                          
+                        type: integer                                   
+                      trek_name:                                        
+                        type: string                                    
+                      booking_date:                                     
+                        type: string                                    
+                      status:                                           
+                        type: string     
+
+
+
+
+/api/trekkers/bookings/{booking_id}/cancel:                             
+  post:                                                                 
+    summary: Cancel a booking                                           
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []                                                  
+    parameters:                                                         
+      - name: booking_id                                                
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer                                                 
+    responses:                                                          
+      200:                                                              
+        description: Booking cancelled                                  
+      404:                                                              
+        description: Booking or trek not found                          
+
+
+
+
+/api/trekkers/history:                                                  
+  get:                                                                  
+    summary: View trekking history                                      
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []                                                  
+    responses:                                                          
+      200:                                                              
+        description: Trekking history                                   
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                history_data:                                           
+                  type: array                                           
+                  items:                                                
+                    type: object                                        
+                    properties:                                         
+                      booking_id:                                       
+                        type: integer                                   
+                      trek_id:                                          
+                        type: integer                                   
+                      trek_name:                                        
+                        type: string                                    
+                      booking_date:                                     
+                        type: string                                    
+                      end_date:                                         
+                        type: string                                    
+                      price:                                            
+                        type: number                                    
+                      status:                                           
+                        type: string                                    
+                      trek_status:                                      
+                        type: string                                    
+
+
+
+
+
+/api/trekkers/history/export:                                           
+  post:                                                                 
+    summary: Export trekking history as CSV (background job)            
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []                                                  
+    responses:                                                          
+      200:                                                              
+        description: Export started                                     
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                msg:                                                    
+                  type: string                                          
+                task_id:                                                
+                  type: strin
+
+
+
+                                                                        
+/api/trekkers/profile:                                                  
+  get:                                                                  
+    summary: Get my profile                                             
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []       
+
+    responses:                                                          
+      200:                                                              
+        description: Profile info                                       
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                id:                                                     
+                  type: integer                                         
+                username:                                               
+                  type: string                                          
+                email:                                                  
+                  type: string                                          
+                phone:                                                  
+                  type: string                                          
+
+
+  put:                                                                  
+    summary: Update my profile                                          
+    tags: [Trekker]                                                     
+    security:                                                           
+      - BearerAuth: []                                                  
+    requestBody:                                                        
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            properties:                                                 
+              username:                                                 
+                type: string                                            
+              email:                                                    
+                type: string                                            
+              phone:                                                    
+                type: string       
+
+    responses:                                                          
+      200:                                                              
+        description: Profile updated    
+
+      400:                                                              
+        description: Username/email/phone already exists  
+
+
+
+
+
+                                                                        
+# STAFF                
+                                                                        
+/api/staff/dashboard:                                                   
+  get:                                                                  
+    summary: Staff dashboard                                            
+    tags: [Staff]                                                       
+    security:                                                           
+      - BearerAuth: [] 
+                                                 
+    responses:                                                          
+      200:                                                              
+        description: Staff dashboard data                               
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                staff_name:                                             
+                  type: string                                          
+                total_assigned_treks:                                   
+                  type: integer                                         
+                total_completed_treks:                                  
+                  type: integer                                         
+                assigned_treks:                                         
+                  type: array                                           
+                  items:                                                
+                    type: object                                        
+                    properties:                                         
+                      trek_id:                                          
+                        type: integer                                   
+                      route_name:                                       
+                        type: string                                    
+                      status:                                           
+                        type: string                                    
+                      start_date:                                       
+                        type: string                                    
+                      end_date:                                         
+                        type: string                                    
+                      registered_trekkers:                              
+                        type: integer    
+
+
+
+
+                                                                        
+/api/staff/treks/{trek_id}:                                             
+  get:                                                                  
+    summary: Get assigned trek details                                  
+    tags: [Staff]                                                       
+    security:                                                           
+      - BearerAuth: [] 
+
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer      
+
+    responses:                                                          
+      200:                                                              
+        description: Trek details               
+
+      404:                                                              
+        description: Trek not found or not assigned to you  
+
+
+
+
+                                                                        
+/api/staff/treks/{trek_id}/participants:                                
+  get:                                                                  
+    summary: Get participants of an assigned trek                       
+    tags: [Staff]                                                       
+    security:                                                           
+      - BearerAuth: []   
+
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer     
+
+    responses:               
+
+      200:                                                              
+        description: Participants list                                  
+        content:                                                        
+          application/json:                                             
+            schema:                                                     
+              type: object                                              
+              properties:                                               
+                trek_name:                                              
+                  type: string                                          
+                participants_list:                                      
+                  type: array                                           
+                  items:                                                
+                    type: object                                        
+                    properties:                                         
+                      booking_id:                                       
+                        type: integer                                   
+                      trekker_id:                                       
+                        type: integer                                   
+                      name:                                             
+                        type: string                                    
+                      email:                                            
+                        type: string                                    
+                      phone:                                            
+                        type: string 
+
+      404:                                                              
+        description: Trek not found or not assigned to you   
+
+
+
+
+                                                                        
+/api/staff/trek_update/{trek_id}/slots:                                 
+  post:                                                                 
+    summary: Update trek slots and status                               
+    tags: [Staff]                                                       
+    security:                                                           
+      - BearerAuth: []   
+
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer 
+
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            properties:                                                 
+              available_slots:                                          
+                type: integer                                           
+              status:                                                   
+                type: string                                            
+                enum: [Open, Closed, Completed]        
+
+
+    responses:                                                          
+      200:                                                              
+        description: Trek slots updated successfully    
+
+      404:                                                              
+        description: Trek not found or not assigned to you    
+
+
+                                                                        
+# ADMIN    
+
+
+/api/admin/dashboard:                                                   
+  get:                                                                  
+    summary: Admin dashboard                                            
+    tags: [Admin]                                                       
+    security:                                                           
+      - BearerAuth: [] 
+
+    responses:                                                          
+      200:                                                              
+        description: Admin dashboard stats and recent data  
+
+
+
+
+
+                                                                        
+/api/admin/create_trek_route:  
+
+  post:                                                                 
+    summary: Create a new trek route                                    
+    tags: [Admin - Trek Routes]                                         
+    security:                                                           
+      - BearerAuth: []     
+
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        multipart/form-data:                                            
+          schema:                                                       
+            type: object                                                
+            required: [route_name, location, difficulty, days_on_trail, iption, altitude, image]                                                
+            properties:                                                 
+              route_name:                                               
+                type: string                                            
+              location:                                                 
+                type: string                                            
+              difficulty:                                               
+                type: string                                            
+                enum: [Easy, Moderate, Tough]                           
+              days_on_trail:                                            
+                type: integer                                           
+              description:                                              
+                type: string                                            
+              altitude:                                                 
+                type: string                                            
+              image:                                                    
+                type: string                                            
+                format: binary    
+
+
+    responses:                                                          
+      200:                                                              
+        description: Trek route created  
+
+      400:                                                              
+        description: Validation errors   
+
+
+
+
+
+                                                                        
+/api/admin/all_treks:                                                   
+  get:                                                                  
+    summary: Get all trek routes                                        
+    tags: [Admin - Trek Routes]                                         
+    security:                                                           
+      - BearerAuth: []           
+
+    responses:                                                          
+      200:                                                              
+        description: List of all trek routes      
+
+
+
+
+                                                                        
+/api/admin/routes/{route_id}:                                           
+  get:                                                                  
+    summary: Get trek route details                                     
+    tags: [Admin - Trek Routes]                                         
+    security:                                                           
+      - BearerAuth: []  
+
+    parameters:                                                         
+      - name: route_id                                                  
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer   
+
+    responses:                                                          
+      200:                                                              
+        description: Trek route details  
+
+      400:                                                              
+        description: Trek route does not exist     
+
+
+
+
+                                                                        
+/api/admin/routes/{route_id}/schedule:                                  
+  post:                                                                 
+    summary: Schedule a trek from a route                               
+    tags: [Admin - Scheduled Treks]                                     
+    security:                                                           
+      - BearerAuth: []    
+
+    parameters:                                                         
+      - name: route_id                                                  
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer   
+
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            required: [start_date, end_date, total_slots, price]        
+            properties:                                                 
+              start_date:                                               
+                type: string                                            
+                example: "2026-08-01"                                   
+              end_date:                                                 
+                type: string                                            
+                example: "2026-08-07"                                   
+              total_slots:                                              
+                type: integer                                           
+              price:                                                    
+                type: number     
+
+    responses:                                                          
+      200:                                                              
+        description: Trek scheduled successfully  
+
+      400:                                                              
+        description: Validation errors     
+
+
+
+
+                                                                        
+/api/admin/scheduled_treks:                                             
+  get:                                                                  
+    summary: Get all scheduled treks                                    
+    tags: [Admin - Scheduled Treks]                                     
+    security:                                                           
+      - BearerAuth: []         
+
+    responses:                       
+
+      200:                                                              
+        description: List of all scheduled treks  
+
+
+
+
+
+                                                                        
+/api/admin/scheduled_trek/{trek_id}:                                    
+  get:                                                                  
+    summary: Get a single scheduled trek                                
+    tags: [Admin - Scheduled Treks]                                     
+    security:                                                           
+      - BearerAuth: []   
+
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer  
+
+    responses:                                                          
+      200:                                                              
+        description: Scheduled trek details  
+
+      400:                                                              
+        description: Trek does not exist       
+
+
+
+
+
+                                                                        
+/api/admin/scheduled_treks/{trek_id}/update_trek:     
+
+  put:                                                                  
+    summary: Update a scheduled trek                                    
+    tags: [Admin - Scheduled Treks]                                     
+    security:                                                           
+      - BearerAuth: []                
+
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer  
+
+    requestBody:                                                        
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            properties:                                                 
+              trek_name:                                                
+                type: string                                            
+              start_date:                                               
+                type: string                                            
+                example: "2026-08-01"                                   
+              end_date:                                                 
+                type: string                                            
+                example: "2026-08-07"                                   
+              price:                                                    
+                type: number                                            
+              status:                                                   
+                type: string                                            
+                enum: [Open, Closed, Completed]                         
+              total_slots:                                              
+                type: integer                                           
+              available_slots:                                          
+                type: integer   
+                                        
+    responses:                                                          
+      200:                                                              
+        description: Trek updated successfully    
+
+      400:                                                              
+        description: Trek does not exist          
+
+
+
+
+                                                                        
+/api/admin/scheduled_treks/{trek_id}/delete_trek:                       
+  post:                                                                 
+    summary: Delete a scheduled trek (cancels all bookings)             
+    tags: [Admin - Scheduled Treks]                                     
+    security:                                                           
+      - BearerAuth: []    
+
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer   
+
+    responses:                                                          
+      200:                                                              
+        description: Trek deleted successfully 
+
+      400:                                                              
+        description: Trek does not exist                                
+
+
+
+
+/api/admin/bookings:                                                    
+  get:                                                                  
+    summary: Get all bookings                                           
+    tags: [Admin]                                                       
+    security:                                                           
+      - BearerAuth: []        
+
+    responses:                                                          
+      200:                                                              
+        description: All bookings with summary stats   
+
+
+
+
+                                                                        
+/api/admin/create_staff:                                                
+  post:                                                                 
+    summary: Create a staff account                                     
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: []      
+
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            required: [staff_name, staff_email, staff_phone,password, role]   
+
+            properties:                                              
+
+              staff_name:                                               
+                type: string                                            
+              staff_email:                                              
+                type: string                                            
+              staff_phone:                                              
+                type: string                                            
+              staff_password:                                           
+                type: string                                            
+              role:                                                     
+                type: string                                            
+                example: trek_staff          
+
+
+    responses:                                                          
+      201:                                                              
+        description: Staff created successfully   
+
+      400:                                                              
+        description: Validation errors        
+
+
+
+
+
+                                                                        
+/api/admin/treks/{trek_id}/assign_staff:                                
+  post:                                                                 
+    summary: Assign staff to a trek                                     
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: []   
+                                               
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer        
+
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            required: [staff_id]                                        
+            properties:                                                 
+              staff_id:                                                 
+                type: integer  
+
+    responses:                                                          
+      200:                                                              
+        description: Staff assigned successfully 
+
+      400:                                                              
+        description: Trek or staff does not exist 
+
+
+
+
+                                                                        
+/api/admin/treks/{trek_id}/staff:                                       
+  get:                                                                  
+    summary: Get all staff assigned to a trek                           
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: [] 
+
+    parameters:                                                         
+      - name: trek_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer           
+
+    responses:                                                          
+      200:                                                              
+        description: List of assigned staff 
+
+
+
+
+
+                                                                        
+/api/admin/assignments/{assignment_id}:                                 
+  post:                                                                 
+    summary: Remove staff from a trek                                   
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: []      
+
+    parameters:                                                         
+      - name: assignment_id                                             
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer 
+
+    requestBody:                                                        
+      required: true                                                    
+      content:                                                          
+        application/json:                                               
+          schema:                                                       
+            type: object                                                
+            required: [trek_id]                                         
+            properties:                                                 
+              trek_id:                                                  
+                type: integer   
+
+
+    responses:                                                          
+      200:                                                              
+        description: Staff removed successfully  
+
+      400:                                                              
+        description: Assignment does not exist     
+
+
+
+
+
+                     
+                                                                        
+/api/admin/all_trekkers:                                                
+  get:                                                                  
+    summary: Get all trekkers                                           
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: [] 
+
+    responses:                                                          
+      200:                                                              
+        description: List of all trekkers  
+
+
+
+
+                                                                        
+/api/admin/all_staffs:                                                  
+  get:                                                                  
+    summary: Get all staff                                              
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: []   
+
+    responses:                                                          
+      200:                                                              
+        description: List of all staff members     
+
+
+
+
+                                                                        
+/api/admin/user_deactivate/{user_id}:                                   
+  post:                                                                 
+    summary: Deactivate a user                                          
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: []  
+
+    parameters:                                                         
+      - name: user_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer          
+
+
+    responses:                                                          
+      200:                                                              
+        description: User deactivated successfully 
+
+      400:                                                              
+        description: User does not exist                                
+
+
+
+
+
+/api/admin/user_activate/{user_id}:                                     
+  post:                                                                 
+    summary: Activate a user                                            
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: []    
+
+    parameters:                                                         
+      - name: user_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer    
+
+    responses:                                                          
+      200:                                                              
+        description: User activated successfully    
+
+      400:                                                              
+        description: User does not exist  
+
+
+
+
+                                                                        
+/api/admin/user_delete/{user_id}:                                       
+  post:                                                                 
+    summary: Delete a user (soft delete)                                
+    tags: [Admin - Users]                                               
+    security:                                                           
+      - BearerAuth: []             
+
+    parameters:                                                         
+      - name: user_id                                                   
+        in: path                                                        
+        required: true                                                  
+        schema:                                                         
+          type: integer  
+
+    responses:                                                          
+      200:                                                              
+        description: User deleted successfully 
+
+      400:                                                              
+        description: User does not exist                                
+
+
+
+
+/api/admin/reports:                                                     
+  get:                                                                  
+    summary: Get full reports                                           
+    tags: [Admin]                                                       
+    security:                                                           
+      - BearerAuth: []      
+                                                  
+    responses:                                                          
+      200:                                                              
+       description: Full stats - revenue, bookings, trek routes, staff 

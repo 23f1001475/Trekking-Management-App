@@ -8,7 +8,7 @@
     
       
     
-    <div class="ms-2 row align-items-center" style="height: 87vh"> <!-- vh : viewport height for full browser screen css : height : 100% / 100vh -->
+    <div class="ms-2 row align-items-center" style = "height: 87vh"> <!-- vh : viewport height for full browser screen css : height : 100% / 100vh -->
 
       <div class="ps-5">
             <h1 class="text-white fw-bold display-3">

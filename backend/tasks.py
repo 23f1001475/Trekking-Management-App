@@ -208,7 +208,7 @@ def export_user_history_csv(user_id):
     name = user.username
 
 
-    filename = f"{name}_history.csv"
+    filename = f"user_history/{name}_history.csv"
 
 
     with open (filename, "w", newline = "") as f:

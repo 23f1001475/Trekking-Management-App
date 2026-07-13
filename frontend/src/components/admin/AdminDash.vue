@@ -262,7 +262,7 @@
                                     <td>{{ new_trek.trek_name }}</td>
                                     <td>{{ new_trek.location }}</td>
                                     <td>{{ new_trek.duration }}</td>
-                                    <td v-if = "new_trek.status === 'Open'">
+                                    <td v-if = "new_trek.status === 'Open' ||   new_trek.status === 'Completed'">
 
                                         <span class="badge bg-success">
                                             {{ new_trek.status }}

@@ -324,7 +324,7 @@ def schedule_trek(route_id):
 
 @app.route("/api/admin/scheduled_treks", methods = ["GET"])  # to get all scheduled treks
 @roles_required('admin')
-@cache.cached(timeout = 60)
+
 
 def get_all_scheduled_treks():
     treks = Trek.query.all()
@@ -630,8 +630,8 @@ def assign_staff(trek_id):
 
 @app.route("/api/admin/treks/<int:trek_id>/staff", methods = ["GET"])  # to get all staff assigned to a trek
 @roles_required('admin')
-@cache.cached(timeout = 60)
-
+# @cache.cached(timeout = 60)          #removed chaching from here as it was breaking the flow of the app(it was storing the data of staff inside the available staff table even when the staff was removed from the trek)
+   
 def get_assigned_staff(trek_id):
     trek = Trek.query.get(trek_id)
 

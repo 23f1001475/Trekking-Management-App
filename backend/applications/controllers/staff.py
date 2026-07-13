@@ -25,6 +25,12 @@ def staff_dashboard():
 
     assigned_treks = TrekStaffAssignment.query.filter_by(trek_staff_id = user.id).all()
 
+    total_assigned_treks = TrekStaffAssignment.query.filter_by(trek_staff_id = user.id).count()
+
+    total_completed_treks = TrekStaffAssignment.query.filter_by(trek_staff_id = user.id).join(Trek, Trek.id == TrekStaffAssignment.trek_id).filter(Trek.status == "Completed").count()
+
+
+
     assigned_treks_list = []
 
     for assignment in assigned_treks:
@@ -32,12 +38,6 @@ def staff_dashboard():
         trek = assignment.trek
 
         registered_trekkers = Booking.query.filter_by(trek_id = trek.id, booking_status = "Booked").count()
-
-        total_assigned_treks = TrekStaffAssignment.query.filter_by(trek_staff_id = user.id).count()
-
-        total_completed_treks = TrekStaffAssignment.query.filter_by(trek_staff_id = user.id).join(Trek, Trek.id == TrekStaffAssignment.trek_id).filter(Trek.status == "Completed").count()
-
-        
 
         trek_data = {
 

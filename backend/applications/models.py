@@ -10,7 +10,7 @@ class User(db.Model):
     password = db.Column(db.String(), nullable = False)
     email = db.Column(db.String(), nullable = False, unique = True)
     role = db.Column(db.String(), nullable = False, default = "trekker")
-    phone = db.Column(db.String(), nullable = False, unique = True)
+    phone = db.Column(db.String(10), nullable = False, unique = True)
     is_active = db.Column(db.Boolean, nullable = False, default = True)
     created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))                  #usign lambda function to set created_at in UTC timezone as datetime.utcnow() returns time in UTC timezone but without timezone info, so we use lambda function to set created_at with timezone info.
     updated_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc), onupdate = lambda: datetime.now(timezone.utc)) #onupdate is used to update the updated_at field whenever the user is updated. timezone = True is to make the datetime object timezone aware. if timezone = False, the datetime object will be timezone naive.
@@ -18,7 +18,6 @@ class User(db.Model):
     deleted_at = db.Column(db.DateTime) 
     bookings = db.relationship("Booking", backref = "trekker", lazy = True)  # one to many , one trekker --> many bookings | one Booking --> one trekker
     assigned_treks = db.relationship("TrekStaffAssignment", backref = "staff", lazy = True) # many to one
-    activity_logs = db.relationship("ActivityLog", backref = "user", lazy = True)
 
 
 #Trek Route Model : To manage trekking routes.
@@ -84,11 +83,7 @@ class TrekStaffAssignment(db.Model):
 
 
 
-# Activity loig Model : for Admin Reports.
 
-class ActivityLog(db.Model):
-    __tablename__ = "activity_log"
-    id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    action = db.Column(db.String(), nullable = False)   # trek_created, staff_created, staff_updated, booking_createed etc
-    created_at = db.Column(db.DateTime(timezone = True), default = lambda: datetime.now(timezone.utc))
+
+
+
